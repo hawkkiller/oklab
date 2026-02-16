@@ -1,0 +1,6 @@
+name: _
+environment:
+  sdk: ^3.11.0
+
+workspace:
+  - packages/oklab
