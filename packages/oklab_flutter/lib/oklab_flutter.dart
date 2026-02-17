@@ -9,3 +9,4 @@ export 'package:oklab/oklab.dart';
 
 export 'src/color_extensions.dart';
 export 'src/color_factories.dart';
+export 'src/gradients.dart';

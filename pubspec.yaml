@@ -1,4 +1,4 @@
-name: _
+name: oklab_workspace
 environment:
   sdk: ^3.11.0
 

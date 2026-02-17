@@ -15,48 +15,143 @@ class _ComparisonApp extends StatelessWidget {
       home: Scaffold(
         backgroundColor: const Color(0xFFF6F5F9),
         body: Center(
-          child: Container(
-            width: 640,
-            margin: const EdgeInsets.all(20),
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              color: const Color(0xFFEBEAF0),
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: const Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text(
-                  'HSL',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.w600,
-                    color: Color(0xFF1D1C2B),
-                    letterSpacing: 0.4,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 640),
+            child: ListView(
+              padding: const EdgeInsets.all(20),
+              children: const [
+                _ComparisonCard(
+                  title: 'HSL vs OKLCH',
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      _SectionLabel('HSL'),
+                      SizedBox(height: 12),
+                      _HueGradientBar(colorAtHue: _hslColorAtHue),
+                      SizedBox(height: 20),
+                      _SectionLabel('OKLCH'),
+                      SizedBox(height: 12),
+                      _HueGradientBar(colorAtHue: _oklchColorAtHue),
+                    ],
                   ),
                 ),
-                SizedBox(height: 12),
-                _HueGradientBar(colorAtHue: _hslColorAtHue),
-                SizedBox(height: 24),
-                Text(
-                  'OKLCH',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.w600,
-                    color: Color(0xFF1D1C2B),
-                    letterSpacing: 0.4,
-                  ),
-                ),
-                SizedBox(height: 12),
-                _HueGradientBar(colorAtHue: _oklchColorAtHue),
+                SizedBox(height: 16),
+                _LinearGradientComparisonCard(),
               ],
             ),
           ),
         ),
       ),
+    );
+  }
+}
+
+class _ComparisonCard extends StatelessWidget {
+  final String title;
+  final Widget child;
+
+  const _ComparisonCard({
+    required this.title,
+    required this.child,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: const Color(0xFFEBEAF0),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            title,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.w700,
+              color: Color(0xFF1D1C2B),
+              letterSpacing: 0.2,
+            ),
+          ),
+          const SizedBox(height: 16),
+          child,
+        ],
+      ),
+    );
+  }
+}
+
+class _SectionLabel extends StatelessWidget {
+  final String text;
+
+  const _SectionLabel(this.text);
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      text,
+      textAlign: TextAlign.center,
+      style: const TextStyle(
+        fontSize: 18,
+        fontWeight: FontWeight.w600,
+        color: Color(0xFF1D1C2B),
+      ),
+    );
+  }
+}
+
+class _LinearGradientComparisonCard extends StatelessWidget {
+  const _LinearGradientComparisonCard();
+
+  @override
+  Widget build(BuildContext context) {
+    const start = Color(0xFF0000FF);
+    const end = Color(0xFFFFFF00);
+
+    final linearGradient = const LinearGradient(
+      begin: Alignment.centerLeft,
+      end: Alignment.centerRight,
+      colors: [start, end],
+    );
+    final oklabGradient = oklabLinearGradient(
+      colors: [start.toOklab(), end.toOklab()],
+      samplesPerSegment: 24,
+    );
+
+    return _ComparisonCard(
+      title: 'LinearGradient vs OklabLinearGradient',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const _SectionLabel('LinearGradient (sRGB interpolation)'),
+          const SizedBox(height: 12),
+          _GradientPreviewBar(gradient: linearGradient),
+          const SizedBox(height: 20),
+          const _SectionLabel('oklabLinearGradient (perceptual interpolation)'),
+          const SizedBox(height: 12),
+          _GradientPreviewBar(gradient: oklabGradient),
+        ],
+      ),
+    );
+  }
+}
+
+class _GradientPreviewBar extends StatelessWidget {
+  final Gradient gradient;
+
+  const _GradientPreviewBar({required this.gradient});
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        gradient: gradient,
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: const SizedBox(height: 56),
     );
   }
 }
