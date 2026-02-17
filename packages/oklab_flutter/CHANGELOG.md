@@ -4,3 +4,7 @@
   * `Color.toOklab()` and `Color.toOklch()` extensions.
   * `colorFromOklab` and `colorFromOklch` helpers.
   * `toColor()` extensions on `OklabColor` and `OklchColor`.
+* Added tests for:
+  * Reference conversion behavior (`Color` -> `OklabColor`)
+  * Achromatic hue behavior in Oklch conversion
+  * RGBA round-trips within 8-bit tolerance
