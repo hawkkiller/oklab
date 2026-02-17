@@ -4,3 +4,4 @@ environment:
 
 workspace:
   - packages/oklab
+  - packages/oklab_flutter
