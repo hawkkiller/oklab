@@ -55,6 +55,58 @@ void main() {
     });
   });
 
+  group('gamut helpers', () {
+    test('isInSrgbGamut reflects top-level gamut checks', () {
+      final inGamut = OklabColor.fromRgb(96, 150, 240).toOklch();
+      final outOfGamut = OklchColor(0.7, 1.0, 35.0);
+
+      expect(inGamut.isInSrgbGamut, isTrue);
+      expect(outOfGamut.isInSrgbGamut, isFalse);
+    });
+
+    test('maxSrgbChroma matches top-level helper', () {
+      final color = OklchColor(0.65, 0.2, 280.0);
+
+      expect(color.maxSrgbChroma, closeTo(maxOklchChroma(color.lightness, color.hue!), 1e-9));
+    });
+
+    test('maxSrgbChroma is zero for powerless hue', () {
+      final achromatic = OklchColor(0.4, 0.0, null);
+      expect(achromatic.maxSrgbChroma, 0.0);
+    });
+
+    test('clampChromaToSrgbGamut preserves in-gamut colors', () {
+      final source = OklabColor.fromRgb(48, 156, 220).toOklch();
+      final clamped = source.clampChromaToSrgbGamut();
+
+      expect(clamped, source);
+    });
+
+    test('clampChromaToSrgbGamut reduces out-of-gamut chroma', () {
+      final source = OklchColor(0.7, 1.0, 35.0);
+      final clamped = source.clampChromaToSrgbGamut();
+
+      expect(clamped.chroma, lessThan(source.chroma));
+      expect(clamped.isInSrgbGamut, isTrue);
+      expect(
+        clamped.chroma,
+        closeTo(maxOklchChroma(clamped.lightness, clamped.hue!), 1e-6),
+      );
+    });
+
+    test('clampChromaToSrgbGamut forwards validation', () {
+      final source = OklchColor(0.7, 0.2, 35.0);
+      expect(
+        () => source.clampChromaToSrgbGamut(tolerance: 0.0),
+        throwsArgumentError,
+      );
+      expect(
+        () => source.clampChromaToSrgbGamut(maxIterations: 0),
+        throwsArgumentError,
+      );
+    });
+  });
+
   group('lerp', () {
     test('shortest-path hue wrapping', () {
       final start = OklchColor(0.5, 0.2, 350.0);

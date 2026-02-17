@@ -1,4 +1,5 @@
 import 'conversions.dart';
+import 'gamut.dart';
 import 'math_utils.dart';
 import 'oklab_color.dart';
 
@@ -67,6 +68,31 @@ final class OklchColor {
   ///
   /// Values are returned as `(r, g, b, alpha)`.
   (int r, int g, int b, double alpha) toRgb() => toOklab().toRgb();
+
+  /// Returns `true` if this color maps inside the sRGB gamut.
+  bool get isInSrgbGamut => isOklchInSrgbGamut(lightness, chroma, hue);
+
+  /// Returns the maximum sRGB-gamut-safe chroma at this lightness and hue.
+  ///
+  /// Returns `0.0` when [hue] is `null`.
+  double get maxSrgbChroma => hue == null ? 0.0 : maxOklchChroma(lightness, hue!);
+
+  /// Returns a copy with chroma clamped to fit the sRGB gamut.
+  ///
+  /// [tolerance] and [maxIterations] are forwarded to gamut search helpers.
+  OklchColor clampChromaToSrgbGamut({
+    double tolerance = 1e-6,
+    int maxIterations = 30,
+  }) {
+    final clampedChroma = clampOklchChromaToSrgbGamut(
+      lightness,
+      chroma,
+      hue,
+      tolerance: tolerance,
+      maxIterations: maxIterations,
+    );
+    return copyWith(chroma: clampedChroma);
+  }
 
   /// Interpolates this color toward [other] in Oklch space.
   ///
