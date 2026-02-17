@@ -1,6 +1,7 @@
 name: oklab
 description: Oklab color space implementation.
 version: 0.0.1
+repository: https://github.com/hawkkiller/oklab
 resolution: workspace
 
 environment:

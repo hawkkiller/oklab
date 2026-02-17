@@ -9,3 +9,4 @@
 * Added hue handling behavior for achromatic colors (`hue = null` when powerless).
 * Added interpolation APIs (`lerp`) and value helpers (`copyWith`, equality, hashCode).
 * Added test coverage for conversion accuracy, round-trips, normalization, and edge cases.
+* Added gamut helpers

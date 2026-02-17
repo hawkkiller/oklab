@@ -1,6 +1,7 @@
 name: oklab_flutter
 description: Flutter integration for Oklab and Oklch color conversions.
 version: 0.0.1
+repository: https://github.com/hawkkiller/oklab
 resolution: workspace
 
 environment:
