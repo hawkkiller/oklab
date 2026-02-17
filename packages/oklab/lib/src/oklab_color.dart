@@ -2,6 +2,9 @@ import 'conversions.dart';
 import 'math_utils.dart';
 import 'oklch_color.dart';
 
+/// Immutable color value in the Oklab color space.
+///
+/// Use [OklabColor.fromRgb] to convert from 8-bit sRGB.
 final class OklabColor {
   /// Perceptual lightness in the `[0, 1]` range after normalization.
   final double lightness;
@@ -19,6 +22,10 @@ final class OklabColor {
   /// Opacity in the `[0, 1]` range after normalization.
   final double alpha;
 
+  /// Creates an [OklabColor] and normalizes inputs.
+  ///
+  /// [lightness] and [alpha] are clamped to `[0, 1]`.
+  /// Non-finite values for [a] and [b] are normalized to `0`.
   factory OklabColor(
     double lightness,
     double a,
@@ -45,6 +52,10 @@ final class OklabColor {
 
   const OklabColor._raw(this.lightness, this.a, this.b, this.alpha);
 
+  /// Converts an 8-bit sRGB color to [OklabColor].
+  ///
+  /// [r], [g], and [b] are clamped to `[0, 255]`.
+  /// [alpha] is clamped to `[0, 1]`.
   factory OklabColor.fromRgb(int r, int g, int b, [double alpha = 1.0]) {
     final sr = clampRgb8(r) / 255.0;
     final sg = clampRgb8(g) / 255.0;
@@ -58,11 +69,16 @@ final class OklabColor {
     return OklabColor(oklab.lightness, oklab.a, oklab.b, alpha);
   }
 
+  /// Converts this color to [OklchColor].
   OklchColor toOklch() {
     final oklch = oklabToOklch(lightness, a, b);
     return OklchColor(oklch.lightness, oklch.chroma, oklch.hue, alpha);
   }
 
+  /// Converts this color to an 8-bit sRGB tuple.
+  ///
+  /// Values are returned as `(r, g, b, alpha)`.
+  /// RGB channels are clamped to `[0, 255]`.
   (int r, int g, int b, double alpha) toRgb() {
     final linear = oklabToLinearSrgb(lightness, a, b);
 
@@ -77,6 +93,9 @@ final class OklabColor {
     return (rgbR, rgbG, rgbB, alpha);
   }
 
+  /// Linearly interpolates this color toward [other] in Oklab space.
+  ///
+  /// Interpolates [lightness], [a], [b], and [alpha] independently.
   OklabColor lerp(OklabColor other, double t) {
     return OklabColor(
       _lerp(lightness, other.lightness, t),
@@ -86,6 +105,7 @@ final class OklabColor {
     );
   }
 
+  /// Returns a new [OklabColor] with selected fields replaced.
   OklabColor copyWith({
     double? lightness,
     double? a,

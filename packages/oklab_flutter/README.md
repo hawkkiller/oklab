@@ -1,16 +1,17 @@
 # oklab_flutter
 
-Flutter interop for the `oklab` package.
+Flutter helpers for converting between Flutter `Color` and `oklab` color types.
 
 ## Features
 
-- Convert Flutter `Color` to `OklabColor` and `OklchColor`
-- Convert `OklabColor`/`OklchColor` back to Flutter `Color`
-- Preserve alpha across conversions
+- `Color` -> `OklabColor` / `OklchColor`
+- `OklabColor` / `OklchColor` -> `Color`
+- Extension methods and top-level factory helpers
 
 ## Usage
 
 ```dart
+import 'package:flutter/material.dart';
 import 'package:oklab/oklab.dart';
 import 'package:oklab_flutter/oklab_flutter.dart';
 
@@ -18,6 +19,7 @@ final source = const Color(0xFF40A0D0);
 final oklab = source.toOklab();
 final oklch = source.toOklch();
 
-final fromLab = oklab.toColor();
-final fromLch = colorFromOklch(oklch);
+final mid = oklab.lerp(OklabColor.fromRgb(255, 140, 0), 0.5);
+final asColor = mid.toColor();
+final fromLch = colorFromOklch(oklch.copyWith(chroma: oklch.chroma * 0.9));
 ```

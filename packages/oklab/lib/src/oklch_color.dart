@@ -2,14 +2,29 @@ import 'conversions.dart';
 import 'math_utils.dart';
 import 'oklab_color.dart';
 
+/// Immutable color value in the Oklch color space.
+///
+/// Oklch represents color as lightness, chroma, and hue (in degrees).
 final class OklchColor {
   static const Object _hueSentinel = Object();
 
+  /// Perceptual lightness in the `[0, 1]` range after normalization.
   final double lightness;
+
+  /// Chroma (colorfulness), normalized to be non-negative.
   final double chroma;
+
+  /// Hue angle in degrees within `[0, 360)`, or `null` for powerless hue.
   final double? hue;
+
+  /// Opacity in the `[0, 1]` range after normalization.
   final double alpha;
 
+  /// Creates an [OklchColor] and normalizes inputs.
+  ///
+  /// [lightness] and [alpha] are clamped to `[0, 1]`.
+  /// [chroma] is clamped to be non-negative.
+  /// [hue] is normalized to `[0, 360)` unless chroma is near zero.
   factory OklchColor(
     double lightness,
     double chroma,
@@ -42,13 +57,20 @@ final class OklchColor {
 
   const OklchColor._raw(this.lightness, this.chroma, this.hue, this.alpha);
 
+  /// Converts this color to [OklabColor].
   OklabColor toOklab() {
     final oklab = oklchToOklab(lightness, chroma, hue);
     return OklabColor(oklab.lightness, oklab.a, oklab.b, alpha);
   }
 
+  /// Converts this color to an 8-bit sRGB tuple.
+  ///
+  /// Values are returned as `(r, g, b, alpha)`.
   (int r, int g, int b, double alpha) toRgb() => toOklab().toRgb();
 
+  /// Interpolates this color toward [other] in Oklch space.
+  ///
+  /// Interpolates hue using the shortest path around the color wheel.
   OklchColor lerp(OklchColor other, double t) {
     if (t <= 0.0) {
       return this;
@@ -65,6 +87,10 @@ final class OklchColor {
     return OklchColor(nextLightness, nextChroma, nextHue, nextAlpha);
   }
 
+  /// Returns a new [OklchColor] with selected fields replaced.
+  ///
+  /// To keep the current hue, omit [hue].
+  /// To explicitly clear hue, pass `hue: null`.
   OklchColor copyWith({
     double? lightness,
     double? chroma,

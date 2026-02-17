@@ -1,39 +1,30 @@
-<!-- 
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
+# oklab
 
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/tools/pub/writing-package-pages). 
-
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/guides/libraries/create-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/to/develop-packages). 
--->
-
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
+Perceptual color types and conversions for the Oklab/Oklch color spaces in Dart.
 
 ## Features
 
-TODO: List what your package can do. Maybe include images, gifs, or videos.
-
-## Getting started
-
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
+- `OklabColor` and `OklchColor` value types
+- RGB <-> Oklab <-> Oklch conversion
+- Alpha-preserving interpolation and copy helpers
+- Input normalization for safe construction
 
 ## Usage
 
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder. 
-
 ```dart
-const like = 'sample';
+import 'package:oklab/oklab.dart';
+
+final oklab = OklabColor.fromRgb(64, 160, 208);
+final oklch = oklab.toOklch();
+
+final adjusted = oklch.copyWith(
+  lightness: 0.72,
+  chroma: oklch.chroma * 0.8,
+);
+
+final (r, g, b, a) = adjusted.toRgb();
 ```
 
-## Additional information
+## Related package
 
-TODO: Tell users more about the package: where to find more information, how to 
-contribute to the package, how to file issues, what response they can expect 
-from the package authors, and more.
+Use `oklab_flutter` for Flutter `Color` interop.
